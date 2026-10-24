@@ -1,0 +1,204 @@
+<title>Job Application Playbook Runner</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: four stage columns of prompt nodes above a single run console; dependencies shown as ringed nodes. */
+:root{
+  --bg:#EDF0F3; --surface:#FFFFFF; --ink:#12202C; --muted:#5A6B79; --line:#CBD3DA;
+  --s1:#0E7C86; --s2:#B4580F; --s3:#5B49B8; --s4:#2B7A3D;
+  --s1t:#D9EEF0; --s2t:#F6E4D3; --s3t:#E5E1F5; --s4t:#DBEEDF;
+  --accent:#12202C; --accent-fg:#FFFFFF; --warn:#A8330F;
+  --f-display:"IBM Plex Sans Condensed","Arial Narrow",sans-serif;
+  --f-body:"IBM Plex Sans",system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0E161D; --surface:#16212A; --ink:#E6ECF1; --muted:#93A4B2; --line:#2B3946;
+  --s1:#4CC3CE; --s2:#F0A261; --s3:#A99BF0; --s4:#74C98A;
+  --s1t:#12343A; --s2t:#3A2A1A; --s3t:#26234A; --s4t:#17361F;
+  --accent:#E6ECF1; --accent-fg:#0E161D; --warn:#FF9B7A; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E161D; --surface:#16212A; --ink:#E6ECF1; --muted:#93A4B2; --line:#2B3946;
+  --s1:#4CC3CE; --s2:#F0A261; --s3:#A99BF0; --s4:#74C98A;
+  --s1t:#12343A; --s2t:#3A2A1A; --s3t:#26234A; --s4t:#17361F;
+  --accent:#E6ECF1; --accent-fg:#0E161D; --warn:#FF9B7A; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:15px/1.5 var(--f-body);
+  padding-block:28px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1120px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+h1{font:700 clamp(28px,5vw,44px)/1.05 var(--f-display);margin:0;text-wrap:balance;letter-spacing:-.01em}
+.lede{color:var(--muted);max-width:62ch;margin:6px 0 0}
+.tag{font:500 11px var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.sample{display:inline-block;margin-left:8px;padding:1px 7px;border:1px solid var(--warn);color:var(--warn);border-radius:3px}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+button{font:500 14px var(--f-body);color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:8px 14px;cursor:pointer}
+button:hover{border-color:var(--ink)}
+button:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+button.primary{background:var(--accent);color:var(--accent-fg);border-color:var(--accent)}
+.prog{flex:1;min-width:140px;height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.prog i{display:block;height:100%;width:0;background:var(--ink);transition:width .3s}
+.count{font:500 13px var(--f-mono);color:var(--muted);min-width:7ch;text-align:right}
+.stages{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+@media(max-width:860px){.stages{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.stages{grid-template-columns:minmax(0,1fr)}}
+.stage{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px;display:flex;flex-direction:column;gap:6px;border-top:4px solid var(--c)}
+.stage h2{font:700 15px var(--f-display);text-transform:uppercase;letter-spacing:.06em;margin:0;color:var(--c)}
+.stage p{margin:0 0 4px;font-size:12.5px;color:var(--muted)}
+.node{display:grid;grid-template-columns:28px 1fr auto;gap:8px;align-items:center;text-align:left;width:100%;padding:7px 8px;border-radius:6px;border:1px solid var(--line);background:var(--bg);position:relative}
+.node b{font:500 12px var(--f-mono);width:26px;height:26px;border-radius:50%;display:grid;place-items:center;border:1.5px solid var(--c);color:var(--c)}
+.node span{font-size:13.5px;min-width:0}
+.node em{font:500 10px var(--f-mono);font-style:normal;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.node.done b{background:var(--c);color:var(--surface)}
+.node.reads{box-shadow:0 0 0 2px var(--c);background:var(--ct)}
+.node.active{background:var(--ct);border-color:var(--c);box-shadow:0 0 0 2px var(--ink)}
+.s1{--c:var(--s1);--ct:var(--s1t)}.s2{--c:var(--s2);--ct:var(--s2t)}.s3{--c:var(--s3);--ct:var(--s3t)}.s4{--c:var(--s4);--ct:var(--s4t)}
+.console{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:12px}
+@media(max-width:760px){.console{grid-template-columns:minmax(0,1fr)}}
+.pane{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.pane h3{font:700 20px var(--f-display);margin:0}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:500 12px var(--f-mono);padding:2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
+.chip.on{color:var(--ink);border-color:var(--ink)}
+pre{margin:0;white-space:pre-wrap;word-break:break-word;font:400 12.5px/1.55 var(--f-mono);color:var(--ink)}
+.out{background:var(--bg);border-radius:6px;padding:12px;min-height:200px}
+.cursor::after{content:"▌";animation:b 1s steps(2) infinite;color:var(--muted)}
+@keyframes b{50%{opacity:0}}
+.gate{font-size:13px;border-left:3px solid var(--warn);padding:2px 10px;color:var(--ink)}
+.how{display:grid;gap:8px}
+code{font:500 13px var(--f-mono);background:var(--bg);padding:2px 6px;border-radius:4px}
+@media(prefers-reduced-motion:reduce){.cursor::after{animation:none}.prog i{transition:none}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="tag">AI-Powered Job Application Playbook · 17 prompts · 1 session</div>
+    <h1>Watch the playbook run</h1>
+    <p class="lede">Seventeen prompts chain through four stages. Each output stays in the session and feeds the prompts after it. Press Play to run a sample application, or click any prompt to inspect it.</p>
+  </header>
+
+  <div class="bar" role="group" aria-label="Run controls">
+    <button id="play" class="primary">Play</button>
+    <button id="prev" aria-label="Previous prompt">Back</button>
+    <button id="next" aria-label="Next prompt">Next</button>
+    <button id="reset">Reset</button>
+    <div class="prog" aria-hidden="true"><i id="pbar"></i></div>
+    <div class="count" id="count">1 / 17</div>
+  </div>
+
+  <div class="stages" id="stages"></div>
+
+  <div class="console">
+    <section class="pane" aria-live="polite">
+      <div class="tag" id="stageTag"></div>
+      <h3 id="title"></h3>
+      <div><div class="tag">Reads from the session</div><div class="chips" id="reads"></div></div>
+      <div><div class="tag">Prompt (condensed)</div><pre id="prompt"></pre></div>
+      <div class="gate" id="gate" hidden></div>
+    </section>
+    <section class="pane">
+      <div class="tag">Output<span class="sample">sample run · fictional candidate and company</span></div>
+      <div class="out"><pre id="out"></pre></div>
+    </section>
+  </div>
+
+  <section class="pane how">
+    <h3>Run it for real</h3>
+    <div>The playbook is installed as a Claude Code skill at <code>.claude/skills/job-application-playbook/</code>. Start it with <code>/job-application-playbook</code>, then give it your resume, LinkedIn profile and the job description. It saves each stage to a <code>job-application/&lt;company&gt;-&lt;role&gt;/</code> folder.</div>
+    <div class="tag">It pauses after Fitment to show your score, and at Prompt 12 for you to pick a title. Prompt 2 needs live web search and is never skipped.</div>
+  </section>
+</div>
+
+<script>
+const ST=[
+ {n:"JD Analysis",d:"Prompts 1–4. Know the company and the hiring manager first.",c:"s1"},
+ {n:"Fitment",d:"Prompts 5–7. Match the problem, not the bullets.",c:"s2"},
+ {n:"Cover Letter",d:"Prompts 8–11. One precise argument.",c:"s3"},
+ {n:"Resume",d:"Prompts 12–17. A positioning document.",c:"s4"}];
+const P=[
+ {s:0,t:"Load the Materials",short:"Load materials",r:[],p:"Read resume, LinkedIn profile and job description. Confirm all three are read before doing anything.",
+  o:"Resume: read (3 roles, 14 years)\nLinkedIn: read\nJD: Director, Data Platform at Northwind Logistics\n\nAll three loaded. Ready for Prompt 2."},
+ {s:0,t:"Trigger Intelligence",short:"Trigger intelligence",web:1,r:[0],p:"Search the last 12 months: company news, hiring patterns, hiring manager, strategic priorities, platforms named in the JD. Output a Trigger Intelligence Brief. Flag every assumption.",
+  o:"EXTERNAL TRIGGERS\n- Series D announced in March (confirmed)\n- Acquired a customs-software vendor in June (confirmed)\n- Two regional data leads left since January (INFERRED from profiles)\n\nINTERNAL TRIGGERS\n- Merging two warehouse systems into one platform\n- New CTO since April\n\nROLE ORIGIN\nThe acquisition doubled the number of data sources. Nobody owns the platform that joins them.\n\nCOST OF NOT FILLING\nIn 3 months the migration slips and the CTO's first roadmap misses its date."},
+ {s:0,t:"HM Attraction Profile",short:"HM attraction profile",r:[0,1],p:"Pattern match on specific logos, programs, technologies. Credibility signals. Unconscious disqualifiers. Name companies. No generic answers.",
+  o:"PATTERN MATCH\n- Logos: large 3PL and freight carriers\n- Platforms: Snowflake, dbt, Kafka\n- Context: post-acquisition integration\n\nCREDIBILITY\n- Team of 25+, budget in the millions\n- Reports to CTO; board-level readouts\n\nDISQUALIFIERS\n- Only startup-scale data experience\n- No migration with live customers"},
+ {s:0,t:"The Real Ask",short:"The real ask",r:[1,2],p:"Pick the frame: broke, being built, changing, or lost. Answer: first 90 days, failure at 12 months, what makes the HM say 'that is exactly our problem'.",
+  o:"FRAME: Something is changing. Two companies, one platform.\n\n90 DAYS\nPick one platform. Move the first two data sources onto it.\n\n12-MONTH FAILURE\nTwo parallel platforms. Two sets of numbers.\n\nTHE HM THINKS\n'You have merged data systems while the business kept shipping.'"},
+ {s:1,t:"Fitment Analysis",short:"Fit table",r:[0,2,3],p:"For 3–5 critical capabilities: where it shows in my background, Strong / Partial / Gap, strongest proof point. Present as a table.",
+  o:"Capability            | Evidence                         | Strength\nPlatform migration    | Moved 40 pipelines at Freightly  | Strong\nTeam leadership       | Led 28 engineers                 | Strong\nPost-merger systems   | One integration, smaller scale   | Partial\nStreaming (Kafka)     | Not on resume                    | Gap"},
+ {s:1,t:"Fitment Report",short:"Fit report",gate:1,r:[4],p:"Overall fit score out of 10 with rationale. Top 3 strengths. Gaps and how to minimise them. Winning angle in 2–3 sentences.",
+  o:"OVERALL FIT: 8/10\nStrong on migration and leadership. One real gap in streaming.\n\nTOP 3 STRENGTHS\n- Live-customer migration at Freightly\n- 28-person team\n- Board reporting\n\nGAPS\n- Kafka: point to the event pipeline work in the 2022 role\n\nWINNING ANGLE\nYou have already merged data platforms without stopping delivery."},
+ {s:1,t:"My Unique Advantage",short:"Mountain of Value",r:[4,5],p:"What is my Mountain of Value: the weight of experience, impact and credibility that makes me hard to replace? 3–4 sentences in the given format.",
+  o:"Having migrated 40 pipelines and led 28 engineers at Freightly and Corvane, I believe I will be a strong fit for this Director role at Northwind.\n40 pipelines moved · 28-person team · board readouts\nMountain of Value: not just qualified, but hard to replace."},
+ {s:2,t:"Cover Letter Draft",short:"Draft",r:[3,6],p:"S1 headline. S2–4 three outcome proof points, no adjectives. S5 extra value. Closing line on the initiative. Short sentences, ¾ page, banned words.",
+  o:"Having moved 40 pipelines and led 28 engineers at Freightly and Corvane, I'll be a strong fit for Director, Data Platform at Northwind.\n\nAt Freightly I moved 40 pipelines to one platform. No customer lost a report.\nI cut query cost by a third in one year.\nI presented the roadmap to the board each quarter.\n\nI have also run vendor integrations after an acquisition.\n\nLooking forward to exploring the platform merge.\n\nRegards, Alex Rivera"},
+ {s:2,t:"Formatting Pass",short:"Format",r:[7],p:"Font Arial or Calibri 10.5–11pt. Spacing 1.15. Margins 2.5cm+. Three-quarters of a page at most.",
+  o:"Applied: Calibri 11pt, 1.15 spacing, 2.5cm margins.\nLength: 0.7 page. Within limit."},
+ {s:2,t:"Alignment Reprompt",short:"Align to JD",r:[3,8],p:"Read the letter next to the JD analysis. Find places that miss the core problem. Rewrite only those sentences. No added length.",
+  o:"1 gap found.\n\nBefore: I presented the roadmap to the board each quarter.\nAfter: I kept one roadmap while two systems ran side by side.\n\nWhy: the core problem is two platforms becoming one."},
+ {s:2,t:"Final Read Check",short:"Final read",r:[9],p:"Flag AI-sounding phrases, sentences over 20 words, vague claims, adjectives without evidence. Return a changes list and the final clean version.",
+  o:"CHANGES\n- Split one 24-word sentence\n- Removed 'significant' (no evidence)\n- No AI-sounding phrases found\n\nFinal letter saved: 0.68 page."},
+ {s:3,t:"Resume Title",short:"Title",gate:2,r:[5,6],p:"Rewrite the resume title to match the role. 4–8 words. No adjectives. Give 3 options and wait for the choice.",
+  o:"1. Director, Data Platform\n2. Director of Data Platform Engineering\n3. Data Platform Director, Post-Merger Integration\n\nYou pick: option 1."},
+ {s:3,t:"Executive Summary",short:"Summary",r:[5,6,11],p:"2–4 sentences. First person, present tense, active voice. Scope, domain, impact type. No numbers. No adjectives without evidence.",
+  o:"I lead data platform teams through system consolidation. I move live pipelines between platforms without interrupting reporting. I report to the CTO and brief the board on data strategy."},
+ {s:3,t:"Core Capabilities",short:"Capabilities",r:[2,11,12],p:"6–10 capability domains, two or three columns, clean labels. Add a Key Technologies line directly beneath if the role has a tech stack. Only technologies on my resume.",
+  o:"Platform Migration      Data Governance\nTeam Leadership         Vendor Integration\nCost Management         Board Reporting\n\nKey Technologies: Snowflake · dbt · Airflow"},
+ {s:3,t:"Rewrite Work Experience",short:"Experience",r:[3,5],p:"Max 5 bullets per role, one sentence each, under 20 words. Lead with impact or scope. At least 2 numbers. Do the same for the previous 2 roles.",
+  o:"Freightly, Head of Data Engineering\n- Moved 40 pipelines to one platform with no customer outage\n- Cut query spend by a third in 12 months\n- Led 28 engineers across three time zones\n- Briefed the board quarterly on data roadmap\n\n(2 earlier roles rewritten the same way)"},
+ {s:3,t:"Structure Check",short:"Structure",r:[11,12,13,14],p:"Check order, section lengths, tech stack near the top, overall length. Leaders: 2–3 pages. Flag issues. Do not rewrite.",
+  o:"Order: correct\nTech stack: directly under capabilities\nLength: 2 pages, within limit\n\nFlag: Education section is longer than the summary. Trim to two lines."},
+ {s:3,t:"Final Alignment",short:"Final alignment",r:[2,15],p:"Read the full resume against the JD. For each critical capability: visible? evidence strong? 10-second test. Return a short list of changes.",
+  o:"Platform merge: visible in title and first bullet. Pass.\nTeam scale: visible. Pass.\nStreaming: weak. Move the event-pipeline bullet up in the 2022 role.\n\n1 change to apply. Done.\n\nFiles written: cover-letter.md, resume.md"}
+];
+const $=id=>document.getElementById(id);
+const gates={1:"Pause: show the fit score and winning angle. If the score is under 5/10, ask whether to continue.",2:"Pause: the user picks one of the three titles before the run continues."};
+let cur=0,done=new Set(),timer=null,playing=false,typed=0;
+const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+function build(){
+  const root=$("stages");
+  ST.forEach((st,si)=>{
+    const col=document.createElement("div");col.className="stage "+st.c;
+    col.innerHTML=`<h2>${st.n}</h2><p>${st.d}</p>`;
+    P.forEach((p,i)=>{if(p.s!==si)return;
+      const b=document.createElement("button");b.className="node";b.id="n"+i;
+      b.innerHTML=`<b>${i+1}</b><span>${p.short}</span><em>${p.web?"web":p.gate?"pause":""}</em>`;
+      b.onclick=()=>{stop();go(i,true)};col.appendChild(b)});
+    root.appendChild(col)});
+}
+function render(){
+  const p=P[cur],st=ST[p.s];
+  P.forEach((q,i)=>{const n=$("n"+i);n.className="node "+ST[q.s].c+
+    (done.has(i)?" done":"")+(i===cur?" active":"")+(p.r.includes(i)&&i!==cur?" reads":"")});
+  $("stageTag").textContent=`Stage ${p.s+1} · ${st.n} · Prompt ${cur+1} of 17`;
+  $("title").textContent=p.t;
+  $("reads").innerHTML=p.r.length?p.r.map(i=>`<span class="chip on">${i+1} ${P[i].short}</span>`).join(""):`<span class="chip">your resume, LinkedIn, JD</span>`;
+  $("prompt").textContent=p.p+(p.web?"\n\nNeeds live web search.":"");
+  const g=$("gate");g.hidden=!p.gate;if(p.gate)g.textContent=gates[p.gate];
+  $("count").textContent=`${cur+1} / 17`;
+  $("pbar").style.width=(done.size/17*100)+"%";
+  $("play").textContent=playing?"Pause":(done.size===17?"Replay":"Play");
+}
+function showOut(){const o=P[cur].o;$("out").textContent=o.slice(0,typed);$("out").classList.toggle("cursor",typed<o.length)}
+function go(i,instant){cur=Math.max(0,Math.min(16,i));
+  for(let k=0;k<cur;k++)done.add(k);
+  typed=instant||reduce?P[cur].o.length:0;render();showOut()}
+function stop(){playing=false;clearInterval(timer);render()}
+function tick(){
+  const o=P[cur].o;
+  if(typed<o.length){typed=Math.min(o.length,typed+4);showOut();return}
+  if(!tick.wait){tick.wait=setTimeout(()=>{tick.wait=null;done.add(cur);
+    if(cur===16){stop();render();return}
+    if(playing)go(cur+1)},P[cur].gate?1800:700)}
+}
+function play(){
+  if(playing){stop();return}
+  if(done.size===17){done.clear();cur=0;typed=0}
+  playing=true;if(typed>=P[cur].o.length&&!reduce)typed=0;
+  render();timer=setInterval(tick,reduce?150:28)}
+$("play").onclick=play;
+$("next").onclick=()=>{stop();done.add(cur);go(cur+1,true)};
+$("prev").onclick=()=>{stop();done.delete(cur-1);go(cur-1,true)};
+$("reset").onclick=()=>{stop();done.clear();go(0,true);render()};
+build();go(1,true);done.clear();done.add(0);render();
+</script>
