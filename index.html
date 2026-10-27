@@ -1,0 +1,276 @@
+<title>Job Agent Setup Tour</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600&family=Figtree:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Light-only. Scroll story: text steps scroll on the left, a sticky 3D stage on the right tilts with scroll and changes pastel per step. */
+:root{
+  --bg:#fffcf8; --panel:#ffffff; --ink:#1c2340; --muted:#5e6580; --line:#ece6dc; --wash:#f6f2ec;
+  --accent:#d9462f; --accent-ink:#ffffff; --tip:#fff1c9; --tip-ink:#5a4300; --code:#f6f2ec; --code-ink:#1c2340;
+  --tint:#dff5ec;
+  --d:'Bricolage Grotesque',system-ui,sans-serif; --b:'Figtree',system-ui,sans-serif; --m:'JetBrains Mono',Consolas,monospace;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font:400 17px/1.6 var(--b);padding-inline:max(16px,env(safe-area-inset-left,0px)) max(16px,env(safe-area-inset-right,0px));padding-block:0 40px;margin:0}
+::selection{background:var(--tint);color:var(--ink)}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);display:grid;gap:0}
+.top .row1{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding-block:14px 10px;max-width:1160px;margin:0 auto;width:100%}
+.top h1{font:500 19px/1.2 var(--d);margin:0;letter-spacing:-.01em}
+.top .tot{color:var(--muted);font-size:14px}
+.bar{height:3px;background:var(--line);max-width:1160px;margin:0 auto;width:100%;border-radius:3px}
+.bar i{display:block;height:100%;width:0;background:var(--accent);border-radius:3px}
+.dots{display:flex;gap:6px;max-width:1160px;margin:0 auto;width:100%;padding-block:8px 6px}
+.dots button{all:unset;cursor:pointer;flex:1;height:8px;border-radius:4px;background:var(--line);transition:background .3s}
+.dots button.done{background:var(--ink)}
+.dots button.on{background:var(--accent)}
+.dots button:focus-visible,.copy:focus-visible,a:focus-visible,.next:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+main{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:clamp(24px,5vw,72px);max-width:1160px;margin:0 auto}
+@media(max-width:860px){main{grid-template-columns:minmax(0,1fr)}}
+.steps{display:block}
+.step{min-height:calc(100vh - 90px);display:grid;align-content:center;gap:18px;padding-block:48px}
+@media(max-width:860px){.step{min-height:80vh;padding-block:28px}}
+.head{display:flex;align-items:flex-end;gap:16px}
+.num{font:400 clamp(80px,11vw,140px)/.8 var(--d);color:transparent;-webkit-text-stroke:1.5px var(--accent);letter-spacing:-.04em}
+h2{font:500 clamp(28px,3.6vw,42px)/1.08 var(--d);margin:0 0 4px;letter-spacing:-.02em;text-wrap:balance}
+.min{display:inline-block;font-size:14px;color:var(--muted);background:var(--tint);border-radius:999px;padding:1px 12px}
+.lead{margin:0;color:var(--muted);max-width:56ch;font-size:18px}
+ol.todo{margin:0;padding:0;list-style:none;display:grid;gap:12px;counter-reset:t;max-width:58ch}
+ol.todo li{counter-increment:t;display:grid;grid-template-columns:26px minmax(0,1fr);gap:12px}
+ol.todo li::before{content:counter(t);width:24px;height:24px;border-radius:50%;background:var(--ink);color:#fff;font:500 13px/24px var(--d);text-align:center;margin-top:2px}
+.snip{display:grid;grid-template-columns:minmax(0,1fr) auto;background:var(--code);border:1px solid var(--line);border-radius:12px;max-width:58ch}
+.snip code{font:400 14px/1.55 var(--m);color:var(--code-ink);padding:12px 14px;overflow-x:auto;white-space:pre;min-width:0}
+.copy{all:unset;cursor:pointer;padding:0 16px;color:var(--accent);font:600 14px var(--b);border-left:1px solid var(--line);display:grid;place-items:center}
+.copy:hover{background:var(--tint)}
+.tip{background:var(--tip);color:var(--tip-ink);border-radius:12px;padding:12px 16px;max-width:58ch}
+.links{display:flex;flex-wrap:wrap;gap:10px}
+.links a{color:#fff;background:var(--ink);text-decoration:none;font-weight:500;padding:10px 20px;border-radius:999px}
+.links a.alt{background:transparent;color:var(--ink);border:1px solid var(--ink)}
+.kit{background:var(--tint);border-radius:14px;padding:16px;display:grid;gap:8px;max-width:58ch}
+.kit b{font:500 18px var(--d)}
+.next{all:unset;cursor:pointer;justify-self:start;font-weight:600;color:var(--accent)}
+.next:hover{text-decoration:underline}
+
+/* 3D stage */
+.stagecol{position:relative}
+.stage{position:sticky;top:96px;height:calc(100vh - 120px);display:grid;place-items:center;perspective:1500px;background:var(--tint);border-radius:28px;transition:background .6s;overflow:hidden}
+@media(max-width:860px){.stagecol{position:sticky;top:90px;z-index:10;order:-1;margin-inline:calc(-1*max(16px,env(safe-area-inset-left,0px)))}.stage{position:relative;top:0;height:38vh;border-radius:0 0 22px 22px}}
+.tilt{width:min(86%,520px);position:relative;transform-style:preserve-3d;transform:rotateY(var(--ry,-14deg)) rotateX(var(--rx,6deg));will-change:transform}
+.plane{position:absolute;border-radius:24px;pointer-events:none}
+.p1{inset:-8% -10% -8% -10%;background:#ffffff66;transform:translateZ(-90px) translate(var(--x1,0px),var(--y1,0px))}
+.p2{width:46%;aspect-ratio:1;right:-16%;top:-16%;background:#ffffff99;transform:translateZ(-30px) translate(var(--x2,0px),var(--y2,0px)) rotate(var(--r2,12deg))}
+.p3{width:30%;aspect-ratio:1;left:-12%;bottom:-14%;background:var(--accent);opacity:.9;border-radius:50%;transform:translateZ(60px) translate(var(--x3,0px),var(--y3,0px))}
+.big{position:absolute;left:-6%;top:-26%;font:500 clamp(100px,16vw,200px)/1 var(--d);color:#ffffffcc;letter-spacing:-.05em;transform:translateZ(-50px);pointer-events:none;user-select:none}
+.card3d{position:relative;transform:translateZ(40px);animation:flip .8s cubic-bezier(.2,.8,.2,1) both;filter:drop-shadow(0 30px 30px #1c234022)}
+@keyframes flip{from{opacity:0;transform:translateZ(-120px) rotateY(-70deg)}}
+.sc{width:100%;display:grid;place-items:center;font-size:15px}
+
+/* scene parts */
+.win{background:var(--panel);border-radius:16px;overflow:hidden;width:100%}
+.win .wb{display:flex;gap:6px;padding:10px 14px;border-bottom:1px solid var(--line);align-items:center;font-size:13px;color:var(--muted)}
+.win .wb i{width:9px;height:9px;border-radius:50%;background:var(--line)}
+.win .body{padding:14px;display:grid;gap:9px}
+.pop{opacity:0;transform:translateY(10px);animation:pop .6s cubic-bezier(.2,.7,.2,1) forwards}
+@keyframes pop{to{opacity:1;transform:none}}
+.chip{display:inline-flex;align-items:center;gap:6px;background:var(--wash);border-radius:999px;padding:3px 12px;font-size:14px}
+.chip.on{background:var(--ink);color:#fff}
+.ok{color:#17805a;font-weight:600}
+.row{display:flex;align-items:center;gap:10px;justify-content:space-between;background:var(--wash);border-radius:12px;padding:10px 13px}
+.row .l{display:flex;align-items:center;gap:10px;min-width:0}
+.ico{width:22px;height:22px;flex:none;stroke:var(--ink);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.node{text-align:center;display:grid;gap:8px;justify-items:center;font-size:14px;line-height:1.3;background:var(--panel);border-radius:16px;padding:14px 8px}
+.node .ico{width:30px;height:30px}
+.flow2{display:grid;grid-template-columns:1fr auto 1fr auto 1fr auto 1fr;align-items:center;width:100%;gap:2px;background:transparent}
+.link{height:2px;background:var(--ink);width:14px;transform-origin:left;transform:scaleX(0);animation:draw .6s ease-out forwards}
+@keyframes draw{to{transform:none}}
+.typed{display:inline-block;overflow:hidden;white-space:nowrap;vertical-align:bottom;border-right:2px solid var(--accent);width:0;animation:type 2.2s steps(34) .5s forwards,blink .7s step-end infinite;max-width:100%}
+@keyframes type{to{width:var(--w,34ch)}}
+@keyframes blink{50%{border-color:transparent}}
+.sw{width:42px;height:24px;border-radius:12px;background:#d9d3c8;position:relative;flex:none;animation:swbg .4s 2.2s forwards}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 2px #0003;animation:swk .4s 2.2s forwards}
+@keyframes swbg{to{background:#17805a}} @keyframes swk{to{left:21px}}
+.bub{max-width:88%;padding:9px 14px;border-radius:16px;line-height:1.4}
+.me{background:var(--ink);color:#fff;justify-self:end;border-bottom-right-radius:4px}
+.ai{background:var(--wash);border-bottom-left-radius:4px}
+.term{background:#1c2340;color:#d6f5e6;font:400 13px/1.7 var(--m);padding:14px;display:grid;gap:2px;min-height:150px}
+.term .typed{border-color:#d6f5e6}
+.pass{color:#7af0b4;font-weight:500}
+.mark{box-shadow:0 0 0 2px var(--accent);animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 2px transparent}}
+.files{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.file{background:var(--wash);border-radius:8px;padding:6px 10px;font:400 12px var(--m);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.clock{width:50px;height:50px;border-radius:50%;border:2px solid var(--ink);position:relative}
+.clock::before,.clock::after{content:"";position:absolute;left:50%;bottom:50%;width:2px;background:var(--accent);border-radius:2px;transform-origin:bottom;margin-left:-1px}
+.clock::before{height:13px;animation:spin 6s linear infinite}.clock::after{height:19px;animation:spin 1.5s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){*{animation-duration:.001s!important;animation-delay:0s!important}html{scroll-behavior:auto}}
+</style>
+
+<div class="top">
+  <div class="row1"><h1>Set up your job application agent</h1><span class="tot" id="tot"></span></div>
+  <div class="bar"><i id="barfill"></i></div>
+  <div class="dots" id="dots" role="tablist" aria-label="Steps"></div>
+</div>
+<main>
+  <div class="steps" id="steps"></div>
+  <div class="stagecol">
+    <div class="stage" id="stage" aria-live="polite">
+      <div class="tilt" id="tilt">
+        <div class="plane p1"></div><div class="plane p2"></div><div class="plane p3"></div>
+        <div class="big" id="big">1</div>
+        <div class="card3d" id="card"></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+var KIT_URL = "JobAgent-Share.zip";          // paste the Google Drive share link for JobAgent-Share.zip here
+var P = {
+  mail:'<rect x="4" y="7" width="24" height="18" rx="3"/><path d="M5 9l11 9 11-9"/>',
+  bot:'<rect x="6" y="9" width="20" height="15" rx="4"/><path d="M16 5v4M12 16v2M20 16v2M11 27h10"/>',
+  folder:'<path d="M4 9h8l3 3h13v13H4z"/>',
+  send:'<path d="M5 16L27 5l-6 22-5-7z"/>',
+  app:'<rect x="5" y="6" width="22" height="20" rx="4"/><path d="M5 12h22"/>',
+  py:'<path d="M16 5c-5 0-6 2-6 4v3h7v1H8c-3 0-4 2-4 5s1 5 4 5h2v-3c0-2 2-4 4-4h6c2 0 3-1 3-3V9c0-2-2-4-7-4z"/>',
+  cloud:'<path d="M9 23a5 5 0 010-10 7 7 0 0113 -2 5 5 0 011 12z"/>',
+  zip:'<rect x="7" y="4" width="18" height="24" rx="3"/><path d="M16 4v8M14 12h4M14 16h4M14 20h4"/>',
+  user:'<circle cx="16" cy="12" r="5"/><path d="M6 27c1-6 5-8 10-8s9 2 10 8"/>'
+};
+var ic=n=>'<svg class="ico" viewBox="0 0 32 32" aria-hidden="true">'+P[n]+'</svg>';
+var win=(t,b)=>'<div class="win"><div class="wb"><i></i><i></i><i></i>&nbsp;'+t+'</div>'+b+'</div>';
+var row=(n,l,r,d)=>'<div class="row pop" style="animation-delay:'+(d||0)+'s"><span class="l">'+ic(n)+l+'</span>'+(r||'')+'</div>';
+var tickAt=d=>'<span class="ok pop" style="animation-delay:'+d+'s">✓ done</span>';
+var tints=['#dff5ec','#def0ff','#fff0c2','#ffe3d4','#ebe4ff','#ffe0e8','#e4f2d2','#d6f2f4','#f8e8d2','#e1e7ff','#d9f6e6'];
+var steps=[
+{t:"Meet your job agent",m:1,
+ what:"LinkedIn emails you new jobs. Claude reads them, picks the best matches and drafts a tailored CV and cover letter for each. You get one folder per job on your Desktop. You review, edit and apply yourself. It never applies or contacts anyone for you.",
+ todo:["Keep this page open next to you and scroll as you go.","Use your own accounts all the way through: your Gmail, your LinkedIn, your resume.","Each step shows how long it takes."],
+ tip:"You do not need to understand code. You will copy and paste a few lines.",
+ scene:()=>{var n=(i,t,d)=>'<div class="node pop" style="animation-delay:'+d+'s">'+ic(i)+t+'</div>',l=d=>'<div class="link" style="animation-delay:'+d+'s"></div>';
+  return '<div class="flow2">'+n('mail','LinkedIn alerts',0)+l(.5)+n('bot','Claude drafts',.9)+l(1.4)+n('folder','Desktop folder',1.8)+l(2.3)+n('send','You apply',2.7)+'</div>'}},
+{t:"Install three free apps",m:5,
+ what:"Install these on your Windows laptop first. Accept the default options, with one exception for Python.",
+ todo:["Claude desktop app: install it and sign in.","Python 3: on the first installer screen, tick \"Add python.exe to PATH\" before you click Install.","Google Drive for desktop: install it and sign in. A new drive letter, usually G:, appears in File Explorer."],
+ tip:"The \"Add to PATH\" tick box is the one people miss. Without it the CV builder will not run.",
+ links:[["Get Claude desktop","https://claude.ai/download"],["Get Python","https://www.python.org/downloads/"],["Get Google Drive","https://www.google.com/drive/download/"]],
+ scene:()=>win('Installing','<div class="body">'+row('app','Claude desktop',tickAt(1))+row('py','Python 3 <span class="chip mark">Add to PATH</span>',tickAt(2.4),.5)+row('cloud','Google Drive · G: drive',tickAt(3.6),1)+'</div>')},
+{t:"Download the kit",m:2,
+ what:"The kit is one small zip with the instructions, the profile form and two helper scripts. Download it and unpack it into your Documents folder as JobAgent.",
+ todo:["Download JobAgent-Share.zip using the box below.","Right-click the zip, choose Extract All, and extract it anywhere.","Open the extracted JobAgent-Share folder, copy it into Documents, and rename it JobAgent."],
+ tip:"Check: PLAYBOOK.md, profile.template.md and deliver.ps1 should sit directly inside Documents\\JobAgent.",
+ kit:true,
+ scene:()=>win('Documents','<div class="body">'+row('zip','JobAgent-Share.zip','<span class="chip">Extract all</span>')+row('folder','JobAgent','<span class="ok">Documents\\JobAgent</span>',1)+
+  '<div class="files">'+['PLAYBOOK.md','profile.template.md','deliver.ps1','make_docx.py','test-deliver.ps1','README.md'].map((f,i)=>'<div class="file pop" style="animation-delay:'+(1.6+i*.3)+'s">'+f+'</div>').join('')+'</div></div>')},
+{t:"Turn on LinkedIn job alerts",m:3,
+ what:"This is where the jobs come from. LinkedIn emails you matches, and the agent reads those emails.",
+ todo:["On linkedin.com open Jobs and search for the role you want.","Set your location, and choose Remote or Hybrid if that is what you want.","Switch on the alert with Email, and choose daily or every few hours.","Make sure the alert goes to the same Gmail you will connect to Claude."],
+ tip:"Set two or three alerts with different job titles for more variety.",
+ links:[["Open LinkedIn Jobs","https://www.linkedin.com/jobs/"]],
+ scene:()=>win('linkedin.com/jobs','<div class="body"><div class="row"><span class="typed" style="--w:26ch">Technical Support Engineer</span></div>'+
+  row('user','Location','<span class="chip">Remote</span>',.3)+'<div class="row pop" style="animation-delay:.6s"><span>Email me new jobs</span><span class="sw"></span></div>'+
+  '<div class="row pop" style="animation-delay:3s"><span>Frequency</span><span class="ok">Daily ✓</span></div></div>')},
+{t:"Fill in your profile",m:5,
+ what:"The profile tells the agent who you are and what you want. The easy way is to let Claude fill it in from your resume.",
+ todo:["In Documents\\JobAgent, copy profile.template.md and rename the copy to profile.md.","Put your resume in the same folder, named master-resume.docx.","Open Claude, choose the folder Documents\\JobAgent, and paste the message below.","Answer Claude's questions. Add real numbers for your achievements, like team size, targets and time saved. The agent never invents numbers."],
+ code:"Read master-resume.docx and fill in profile.md for me. Ask me about anything you cannot find. Use my real numbers only.",
+ tip:"Real numbers make much better CVs. Spend your time here.",
+ scene:()=>win('Claude','<div class="body"><div class="bub me pop">Read master-resume.docx and fill in profile.md for me.</div>'+
+  '<div class="bub ai pop" style="animation-delay:1.2s">Done. I filled in your name, roles and tone. Two questions: your timezone, and how big your last team was?</div>'+
+  '<div class="files"><div class="file pop" style="animation-delay:2.4s">✓ Applicant name</div><div class="file pop" style="animation-delay:2.7s">✓ Target roles</div><div class="file pop" style="animation-delay:3s">✓ Work arrangement</div><div class="file pop" style="animation-delay:3.3s">? Achievements</div></div></div>')},
+{t:"Make the outbox folder",m:1,
+ what:"The agent saves finished applications into a folder in Google Drive. Your laptop then copies them to your Desktop.",
+ todo:["Open File Explorer, then the G: drive (My Drive).","Right-click, choose New, then Folder, and name it exactly JobApplications.","In profile.md, find the Outbox line and write its path, for example G:\\My Drive\\JobApplications."],
+ tip:"Not G:? Use the drive letter you see for Google Drive.",
+ scene:()=>win('This PC › G: › My Drive','<div class="body">'+row('folder','JobApplications','<span class="ok">new folder ✓</span>')+
+  '<div class="row pop" style="animation-delay:1.2s"><span class="typed" style="--w:34ch;animation-delay:1.6s">Outbox: G:\\My Drive\\JobApplications</span></div></div>')},
+{t:"Install the Desktop helper",m:3,
+ what:"One small script copies each finished folder from Drive onto your Desktop. You install it once.",
+ todo:["Click Start, type PowerShell, and open Windows PowerShell.","Copy the first line, paste it into PowerShell and press Enter. If it asks, type Y.","Copy the second line (change G:\\My Drive if your path differs), paste, press Enter.","Copy the third line, paste, press Enter. You should see PASS."],
+ codes:["Set-ExecutionPolicy -Scope CurrentUser RemoteSigned","cd \"$env:USERPROFILE\\Documents\\JobAgent\"; .\\deliver.ps1 -Outbox \"G:\\My Drive\\JobApplications\" -Install",".\\test-deliver.ps1"],
+ tip:"To paste in PowerShell, right-click inside the window.",
+ scene:()=>win('Windows PowerShell','<div class="term"><span class="typed" style="--w:50ch">PS&gt; .\\deliver.ps1 -Outbox "G:\\My Drive\\JobApplications" -Install</span><span class="pop" style="animation-delay:2.9s">Helper installed. Runs every few minutes.</span><span class="typed" style="--w:22ch;animation-delay:3.6s;border:0">PS&gt; .\\test-deliver.ps1</span><span class="pass pop" style="animation-delay:5s">PASS</span></div>')},
+{t:"Connect your Gmail to Claude",m:2,
+ what:"This lets Claude read your LinkedIn alerts and email you the daily summary. Use your own Gmail only.",
+ todo:["In the Claude app open Settings, then Connectors.","Find Gmail and click Connect.","Sign in with the Gmail that receives your LinkedIn alerts, and allow access."],
+ tip:"This setup only reads job alerts and your replies. It never sends applications.",
+ scene:()=>win('Claude › Settings › Connectors','<div class="body">'+row('cloud','Google Calendar','<span class="chip">Connect</span>')+
+  '<div class="row mark pop" style="animation-delay:.4s"><span class="l">'+ic('mail')+'Gmail</span><span class="chip on pop" style="animation-delay:2s">Connected ✓</span></div>'+row('cloud','Google Drive','<span class="chip">Connect</span>',.8)+'</div>')},
+{t:"Run your first test",m:5,
+ what:"Ask Claude to run the playbook once, by hand, so you can see it work before you schedule it.",
+ todo:["In Claude, make sure the folder is Documents\\JobAgent.","Paste the message below and send it.","Wait a few minutes. A new folder appears in JobApplications, then on your Desktop.","Open it: you should see 8 files. Read review-checklist.md first and tell Claude what to change."],
+ code:"Follow PLAYBOOK.md using profile.md.",
+ tip:"If something is off, tell Claude in plain words, for example: make the tone warmer.",
+ scene:()=>win('Claude','<div class="body"><div class="bub me pop">Follow PLAYBOOK.md using profile.md.</div>'+
+  '<div class="bub ai pop" style="animation-delay:1s">Found 6 new jobs. Drafting your top matches now…</div>'+
+  '<div class="files">'+['job-description.md','research.md','fit-assessment.md','mountain-of-value.md','draft-cv.docx','draft-cover-letter.docx','review-checklist.md','application-link.txt'].map((f,i)=>'<div class="file pop" style="animation-delay:'+(2+i*.35)+'s">'+f+'</div>').join('')+'</div></div>')},
+{t:"Put it on a schedule",m:3,
+ what:"Last setup step. Claude will check for jobs by itself and email you a summary morning and evening.",
+ todo:["Paste the message below into Claude and send it.","Check the times and your timezone in profile.md first.","Leave the Claude app open and the laptop on. Runs only happen then."],
+ code:"Create two scheduled tasks for me. One at 08:00 and 18:00 that runs PLAYBOOK.md with profile.md and emails me the summary. One every 3 hours that runs it without email. Use my own details from profile.md.",
+ tip:"If the laptop or Claude is closed, nothing runs. It simply catches up the next time you open it.",
+ scene:()=>'<div class="flow2" style="grid-template-columns:1fr auto 1fr"><div class="node pop"><div class="clock"></div>Every 3 hours</div><div class="link" style="animation-delay:.6s;width:44px"></div><div class="node pop" style="animation-delay:1s">'+ic('mail')+'Summary at 08:00 and 18:00</div></div>'},
+{t:"Your daily routine",m:1,
+ what:"From now on it takes about five minutes a day.",
+ todo:["Read the summary email. It lists the jobs waiting for you.","Open the matching folder on your Desktop, edit the CV and letter, and apply on LinkedIn yourself.","Reply to the summary with applied: CompanyName or skip: CompanyName. That removes the job from future reminders.","To change the kind of job later, edit profile.md and update your LinkedIn alerts."],
+ tip:"That is everything. You are done.",
+ scene:()=>win('Reply to summary','<div class="body"><div class="bub ai pop">3 drafts waiting: Acme (fit 8/10), Globex (7/10)…</div>'+
+  '<div class="bub me pop" style="animation-delay:1.2s"><span class="typed" style="--w:14ch;animation-delay:1.4s;border-color:#fff">applied: Acme</span></div>'+
+  '<div class="chip pop ok" style="animation-delay:3.8s;justify-self:start">✓ Acme removed from reminders</div></div>')}
+];
+var $=id=>document.getElementById(id), cur=-1, secs=[], reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+function esc(s){return s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function snip(c){return '<div class="snip"><code>'+esc(c)+'</code><button class="copy" data-c="'+esc(c)+'">Copy</button></div>'}
+function stepHtml(s,i){
+  var h='<div class="head"><span class="num">'+(i+1)+'</span><div><h2>'+s.t+'</h2><span class="min">about '+s.m+' min</span></div></div><p class="lead">'+s.what+'</p>';
+  h+='<ol class="todo">'+s.todo.map(x=>'<li><span>'+esc(x)+'</span></li>').join('')+'</ol>';
+  if(s.code) h+=snip(s.code);
+  if(s.codes) h+=s.codes.map(snip).join('');
+  if(s.kit) h+='<div class="kit"><b>Download the kit</b>'+(KIT_URL?'<div class="links"><a href="'+KIT_URL+'" target="_blank" rel="noopener">Download JobAgent-Share.zip</a></div>':'<span>The person who sent you this page will give you the download link. Open it, click Download, and save the zip.</span>')+'</div>';
+  if(s.links) h+='<div class="links">'+s.links.map((l,k)=>'<a class="'+(k?'alt':'')+'" href="'+l[1]+'" target="_blank" rel="noopener">'+l[0]+'</a>').join('')+'</div>';
+  h+='<div class="tip"><b>Tip.</b> '+s.tip+'</div>';
+  if(i<steps.length-1) h+='<button class="next" data-go="'+(i+1)+'">Next: '+steps[i+1].t+' ↓</button>';
+  return '<section class="step" data-i="'+i+'">'+h+'</section>';
+}
+function activate(i){
+  if(i==cur) return; cur=i;
+  var c=$('card'); c.style.animation='none'; void c.offsetWidth; c.style.animation='';
+  c.innerHTML='<div class="sc">'+steps[i].scene()+'</div>';
+  $('big').textContent=i+1;
+  $('stage').style.background=tints[i%tints.length];
+  document.documentElement.style.setProperty('--tint',tints[i%tints.length]);
+  [].forEach.call($('dots').children,(b,k)=>b.className=k<i?'done':k==i?'on':'');
+}
+var tick=false;
+function frame(){
+  tick=false;
+  var h=document.documentElement, max=h.scrollHeight-innerHeight;
+  $('barfill').style.width=(max>0?h.scrollTop/max*100:0)+'%';
+  if(cur<0||reduce) return;
+  var r=secs[cur].getBoundingClientRect(), p=Math.max(0,Math.min(1,(innerHeight*.5-r.top)/r.height)), t=$('tilt').style;
+  t.setProperty('--ry',(-18+p*30).toFixed(1)+'deg'); t.setProperty('--rx',(8-p*12).toFixed(1)+'deg');
+  t.setProperty('--x1',(p*-26+13).toFixed(0)+'px'); t.setProperty('--y1',(p*20-10).toFixed(0)+'px');
+  t.setProperty('--x2',(p*30-15).toFixed(0)+'px'); t.setProperty('--y2',(p*-40+20).toFixed(0)+'px'); t.setProperty('--r2',(p*40-8).toFixed(0)+'deg');
+  t.setProperty('--x3',(p*-30+15).toFixed(0)+'px'); t.setProperty('--y3',(p*34-17).toFixed(0)+'px');
+}
+function req(){ if(!tick){tick=true;requestAnimationFrame(frame)} }
+function init(){
+  $('tot').textContent=steps.length+' steps · about '+steps.reduce((a,s)=>a+s.m,0)+' minutes';
+  $('steps').innerHTML=steps.map(stepHtml).join('');
+  $('dots').innerHTML=steps.map((s,i)=>'<button data-go="'+i+'" aria-label="Step '+(i+1)+': '+esc(s.t)+'"></button>').join('');
+  secs=[].slice.call(document.querySelectorAll('.step'));
+  var io=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){ activate(+e.target.dataset.i); req() } }),{rootMargin:'-45% 0px -45% 0px'});
+  secs.forEach(s=>io.observe(s)); activate(0); frame();
+  addEventListener('scroll',req,{passive:true}); addEventListener('resize',req);
+}
+document.addEventListener('click',e=>{
+  var b=e.target.closest('button'); if(!b) return;
+  if(b.dataset.go!==undefined){ secs[+b.dataset.go].scrollIntoView({behavior:reduce?'auto':'smooth',block:'center'}) }
+  else if(b.classList.contains('copy')){
+    var t=b.dataset.c, done=()=>{b.textContent='Copied ✓';setTimeout(()=>b.textContent='Copy',1600)};
+    try{navigator.clipboard.writeText(t).then(done,()=>sel(b))}catch(x){sel(b)}
+  }
+});
+function sel(b){var c=b.previousElementSibling,r=document.createRange();r.selectNodeContents(c);var s=getSelection();s.removeAllRanges();s.addRange(r);b.textContent='Press Ctrl+C'}
+init();
+</script>
