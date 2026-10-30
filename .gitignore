@@ -1,3 +1,5 @@
 job-application/
 profile/*
 !profile/preferences.example.yaml
+!profile/resumes.example/
+__pycache__/

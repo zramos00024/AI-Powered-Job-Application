@@ -1,5 +1,17 @@
 # resume.md / cover-letter.md format (read by scripts/docs_theme.py)
 
+## Sample resumes (profile/resumes/*.md)
+One file per role type. A header block comes first, above the `# Name` line. `pick_resume.py` reads it; `docs_theme.py` ignores it.
+
+    Role family: Head of Support
+    Target titles: Head of Support; Director of Customer Support
+    Keywords: support strategy, team leadership, escalation management, SLA
+
+Titles and keywords are separated by `;` or `,`. Keep keywords to real skills the sample backs up. Working examples (placeholder data): `profile/resumes.example/`.
+For `output_mode: keep_layout`, put the candidate's own `.docx` next to the sample with the same file name (`head-of-support.docx`).
+
+## Tailored resume.md
+
 resume.md must follow this exact shape or the .docx builder will mis-style it:
 
     # Full Name

@@ -1,28 +1,49 @@
 # Copy to profile/preferences.yaml and edit. profile/ is git-ignored, keep it private.
 candidate_name: "Your Name"
-resume_file: profile/resume.md          # master resume in the format of references/resume-format.md
 report_email: you@example.com           # reports go to this address only
 email_mode: draft                       # draft = Gmail draft you review, send = email it to report_email
 
+# --- Resumes -------------------------------------------------------------
+resumes_dir: profile/resumes            # one .md per role type, each with a header block (see references/resume-format.md)
+min_resume_match_score: 40              # 0-100 from scripts/pick_resume.py. Below this, no draft: the job is listed as "no close resume"
+output_mode: navy_ice                   # navy_ice = rebuild from markdown in the Navy & Ice theme
+                                        # keep_layout = edit text in place in the sample's own .docx (profile/resumes/<same-name>.docx)
+                                        #   falls back to navy_ice, and says so, if that .docx is missing or an edit is refused
+
+# --- When the skill may run ----------------------------------------------
+timezone: Australia/Sydney              # IANA name, e.g. Australia/Sydney or Australia/Brisbane (Brisbane has no daylight saving)
+run_window:
+  days: [mon, tue, wed, thu, fri]
+  start: "06:00"
+  end: "17:00"                          # inclusive
+  grace_minutes: 10                     # tolerance for a late scheduler start
+                                        # outside the window the skill exits quietly: no search, no email
+
+# --- Alerts (quietest by default) ----------------------------------------
+alerts:
+  alert_mode: per_run                   # per_run = one email per run, only if there are new matches
+                                        # instant_plus_digest = immediate email for score >= instant_min_score,
+                                        #   plus digests at digest_times for the rest
+  instant_min_score: 8                  # instant_plus_digest only
+  digest_times: ["12:00", "17:00"]      # instant_plus_digest only. A digest is sent only if it has something in it
+  max_emails_per_run: 1                 # hard cap; instant matches in one run share one email
+  max_jobs_listed_per_email: 8          # keeps emails short
+
 search:
   titles:                               # job titles to look for
-    - "senior support engineer"
-    - "technical support engineer"
-    - "automation specialist"
-  locations: ["Philippines", "Remote"]
+    - "head of support"
+    - "support manager"
+  locations: ["Australia", "Remote"]
   work_modes: ["remote", "hybrid"]
-  posted_within_hours: 24
-  min_monthly_pay: null                 # e.g. 90000, in PHP. null = no pay filter
-  currency: PHP
+  posted_within_hours: 24               # a request, not a promise: jobs are only called "last 24 hours" when their posted date proves it
+  min_monthly_pay: null                 # e.g. 9000. null = no pay filter
+  currency: AUD
 
 exclude_words:                          # skip a job if its text contains any of these
   - "call center"
   - "tier 1"
-  - "24/7 on-call only"
 exclude_companies: []
 
 scoring:
   min_fit_score: 6                      # out of 10, jobs below this are listed but get no drafts
-  max_drafts_per_run: 3                 # full resume + cover letter for at most this many jobs
-
-schedule_note: "Run daily at 07:00 Manila time via a scheduled task."
+  max_drafts_per_run: 2                 # full resume + cover letter for at most this many jobs per run

@@ -55,16 +55,18 @@ def heading(d,t,text):
 
 def build_resume(t,src,out):
     d=base(t,True); lines=[l for l in open(src).read().split('\n') if l.strip()]
+    while lines and not lines[0].startswith('# '): lines.pop(0)  # drop a sample-resume header block
     name,contact=lines[0][2:],lines[1]
     p=d.add_paragraph(); p.paragraph_format.space_before=Pt(6); p.paragraph_format.space_after=Pt(0)
     font(p.add_run(name),t['head'],24,True,t['light']); shade(p,t['dark'])
     p=d.add_paragraph(); p.paragraph_format.space_after=Pt(12)
     font(p.add_run(contact),t['body'],9.5,False,t['light']); shade(p,t['dark'])
-    section=''
+    section=''; titled=False
     for line in lines[2:]:
         if line.startswith('## '):
             h=line[3:]
-            if h.startswith('IT Support Engineer'):
+            if not titled:  # the first ## line is the resume title
+                titled=True
                 p=d.add_paragraph(); p.paragraph_format.space_after=Pt(0)
                 font(p.add_run(h),t['head'],13,True,t['dark'])
             else: section=h; heading(d,t,h)
@@ -100,9 +102,10 @@ def build_letter(t,src,out):
 if __name__=='__main__':
     import argparse
     ap=argparse.ArgumentParser(description="Build Navy & Ice resume and cover letter .docx from markdown")
-    ap.add_argument('--resume',required=True); ap.add_argument('--letter',required=True)
+    ap.add_argument('--resume'); ap.add_argument('--letter')
     ap.add_argument('--out-dir',required=True); ap.add_argument('--prefix',default='Candidate')
     a=ap.parse_args(); os.makedirs(a.out_dir,exist_ok=True); t=THEMES['navy-ice']
-    build_resume(t,a.resume,os.path.join(a.out_dir,f'{a.prefix}-Resume.docx'))
-    build_letter(t,a.letter,os.path.join(a.out_dir,f'{a.prefix}-Cover-Letter.docx'))
+    if not (a.resume or a.letter): ap.error('give --resume and/or --letter')
+    if a.resume: build_resume(t,a.resume,os.path.join(a.out_dir,f'{a.prefix}-Resume.docx'))
+    if a.letter: build_letter(t,a.letter,os.path.join(a.out_dir,f'{a.prefix}-Cover-Letter.docx'))
     print('contrast name-on-band %.1f:1'%contrast(t['light'],t['dark']))
