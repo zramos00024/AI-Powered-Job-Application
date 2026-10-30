@@ -1,1 +1,3 @@
 job-application/
+profile/*
+!profile/preferences.example.yaml

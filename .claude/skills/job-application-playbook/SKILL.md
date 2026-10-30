@@ -42,3 +42,10 @@ Runs 17 chained prompts in one session. Each output feeds the next. The full tex
 
 ## Finish
 Write the final files to the folder: `cover-letter.md` and `resume.md` (offer .docx via the docx skill if the user wants Word). End with a 5-line summary: fit score, winning angle, chosen title, files written, open assumptions to verify.
+
+## Batch mode (when called by job-scout)
+Used for unattended runs. Do not pause or ask questions.
+- Triage: prompts 1, 5, 6 only (short form).
+- Full draft: prompts 2, 3, 4, 7, 8, 10, 11, 13, 14, 15, 17.
+- Skip 9 (the Word template sets formatting), 12 (pick the best honest title yourself) and 16 (the template controls length).
+- Still never skip 2's research when the company is known, and still never invent facts.

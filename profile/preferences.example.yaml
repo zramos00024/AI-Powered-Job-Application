@@ -1,0 +1,28 @@
+# Copy to profile/preferences.yaml and edit. profile/ is git-ignored, keep it private.
+candidate_name: "Your Name"
+resume_file: profile/resume.md          # master resume in the format of references/resume-format.md
+report_email: you@example.com           # reports go to this address only
+email_mode: draft                       # draft = Gmail draft you review, send = email it to report_email
+
+search:
+  titles:                               # job titles to look for
+    - "senior support engineer"
+    - "technical support engineer"
+    - "automation specialist"
+  locations: ["Philippines", "Remote"]
+  work_modes: ["remote", "hybrid"]
+  posted_within_hours: 24
+  min_monthly_pay: null                 # e.g. 90000, in PHP. null = no pay filter
+  currency: PHP
+
+exclude_words:                          # skip a job if its text contains any of these
+  - "call center"
+  - "tier 1"
+  - "24/7 on-call only"
+exclude_companies: []
+
+scoring:
+  min_fit_score: 6                      # out of 10, jobs below this are listed but get no drafts
+  max_drafts_per_run: 3                 # full resume + cover letter for at most this many jobs
+
+schedule_note: "Run daily at 07:00 Manila time via a scheduled task."
