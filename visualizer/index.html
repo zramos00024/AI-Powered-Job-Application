@@ -1,4 +1,21 @@
-<title>Job Application Playbook Runner</title>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Job Application Playbook Visualizer</title>
+<meta name="description" content="Interactive demo of the 17-prompt AI job application playbook: research, fit scoring, cover letter and resume, using sample data.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://zramos00024.github.io/Claude-AI-Powered-Application/visualizer/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Job Application Playbook Visualizer">
+<meta property="og:description" content="Interactive demo of the 17-prompt AI job application playbook: research, fit scoring, cover letter and resume, using sample data.">
+<meta property="og:url" content="https://zramos00024.github.io/Claude-AI-Powered-Application/visualizer/">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Job Application Playbook Visualizer">
+<meta name="twitter:description" content="Interactive demo of the 17-prompt AI job application playbook: research, fit scoring, cover letter and resume, using sample data.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
@@ -68,6 +85,8 @@ pre{margin:0;white-space:pre-wrap;word-break:break-word;font:400 12.5px/1.55 var
 code{font:500 13px var(--f-mono);background:var(--bg);padding:2px 6px;border-radius:4px}
 @media(prefers-reduced-motion:reduce){.cursor::after{animation:none}.prog i{transition:none}}
 </style>
+</head>
+<body>
 
 <div class="wrap">
   <header>
@@ -202,3 +221,5 @@ $("prev").onclick=()=>{stop();done.delete(cur-1);go(cur-1,true)};
 $("reset").onclick=()=>{stop();done.clear();go(0,true);render()};
 build();go(1,true);done.clear();done.add(0);render();
 </script>
+</body>
+</html>
