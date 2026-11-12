@@ -1,0 +1,42 @@
+name: Website QA
+# Runs on a Vercel preview deployment (deployment_status) or manually with a URL.
+on:
+  deployment_status:
+  workflow_dispatch:
+    inputs:
+      url:
+        description: URL to test
+        required: true
+permissions:
+  contents: read
+jobs:
+  qa:
+    if: github.event_name == 'workflow_dispatch' || github.event.deployment_status.state == 'success'
+    runs-on: ubuntu-latest
+    env:
+      TARGET_URL: ${{ github.event.inputs.url || github.event.deployment_status.environment_url || github.event.deployment_status.target_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - name: Install QA tools
+        working-directory: .claude/skills/website-qa/scripts
+        run: npm install --no-audit --no-fund && npx playwright install --with-deps chromium
+      - name: Browser QA
+        run: node .claude/skills/website-qa/scripts/qa_run.mjs "$TARGET_URL" --out qa-output/site --max-pages 40
+      - name: Lighthouse
+        run: bash .claude/skills/website-qa/scripts/lighthouse_run.sh "$TARGET_URL" qa-output/site
+        continue-on-error: true
+      - name: Build report and apply release gate
+        id: report
+        run: python3 .claude/skills/website-qa/scripts/report.py qa-output/site --fail-on High | tee -a "$GITHUB_STEP_SUMMARY"
+        continue-on-error: true
+      - name: Add report to job summary
+        run: cat qa-output/site/QA-REPORT.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with: { name: qa-report, path: qa-output/site }
+      - name: Fail release if gate failed
+        if: steps.report.outcome == 'failure'
+        run: exit 1

@@ -1,0 +1,12 @@
+{
+  "name": "website-qa-scripts",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Runtime dependencies for the website-qa skill",
+  "type": "module",
+  "dependencies": {
+    "axe-core": "4.10.2",
+    "lighthouse": "12.6.1",
+    "playwright": "1.63.0"
+  }
+}
