@@ -1,30 +1,31 @@
 # Copy to profile/recruiter-preferences.yaml and edit. profile/ is git-ignored, keep it private.
-candidate_name: "Your Name"
-resume_file: profile/resume.md
+candidate_name: "Candidate Name"        # may be a friend you are helping
+resume_file: profile/resume.md          # that person's master resume
 report_email: you@example.com           # reports go to this address only, never to recruiters
 email_mode: draft                       # draft = Gmail draft you review, send = email it to report_email
 
 search:
-  target_roles:                         # C-level roles you want to be considered for
-    - "Chief Technology Officer"
+  levels: ["C-level", "VP", "Head of"]  # seniority the recruiter must place
+  target_roles:
     - "Chief Operating Officer"
-    - "Chief Product Officer"
-  industries: ["SaaS", "fintech", "healthtech"]
-  company_stage: ["growth", "PE-backed", "public"]   # optional filter
+    - "VP Operations"
+    - "Head of Operations"
+  industries: ["SaaS", "fintech"]
+  company_stage: ["growth", "PE-backed", "public"]
+  target_companies: []                  # optional, for in-house executive recruiters
   regions: ["Philippines", "APAC", "Remote"]
   work_modes: ["remote", "hybrid"]
-  min_total_comp: null                  # optional, in currency below
+  open_to_interim: false                # true adds interim and fractional executive firms
+  signal_window_days: 30                # how far back to look for departures, funding, acquisitions
+  min_total_comp: null
   currency: USD
 
-exclude_firms: []                       # e.g. your current employer's retained firm
-exclude_words:                          # skip recruiters whose profile contains these
-  - "all levels"
-  - "volume hiring"
-  - "staffing"
+exclude_firms: []                       # e.g. the firm that ran the process that fell through
+exclude_words: ["all levels", "volume hiring", "staffing"]
 
 scoring:
-  min_fit_score: 6                      # out of 10, below this are listed but get no drafts
-  max_drafts_per_run: 3                 # full outreach pack for at most this many recruiters
+  min_fit_score: 6                      # out of 10
+  max_drafts_per_run: 5                 # full outreach packs per run
 
-confidentiality: "Quiet search. Do not name my current employer in outreach."
-schedule_note: "Run weekly, Monday 07:00 Manila time via a scheduled task."
+confidentiality: "Quiet search. Do not name the current employer in outreach."
+schedule_note: "Run Monday and Thursday 07:00 Manila time via a scheduled task."

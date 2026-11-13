@@ -14,9 +14,11 @@ Open this repo in Claude Code and run `/job-application-playbook`. Give it your 
 - `.claude/skills/job-application-playbook/prompts.md`: full text of all 17 prompts
 - `visualizer/index.html`: open in a browser to watch a sample run of the pipeline (fictional data)
 
-## Recruiter scout (C-level outreach)
-`/recruiter-scout` is a second agent built like the job scout. Instead of job posts, it finds recruiters and search firms that place **only C-level roles**, scores them against your executive profile, drafts a short outreach email and LinkedIn note for the best matches, and emails you a report. It never contacts a recruiter itself. You review and send by hand.
+## Recruiter scout (executive outreach)
+`/recruiter-scout` is a second agent built like the job scout. It finds recruiters, search firms and investor talent partners that place C-level, VP and Head-of roles, looks for signs of a live search, scores each one, drafts an outreach pack (email, three follow-ups, LinkedIn note, warm-intro ask, call prep), tracks follow-ups due, and emails you a report. It never contacts a recruiter itself. You review and send by hand.
 
 - Settings: copy `profile/recruiter-preferences.example.yaml` to `profile/recruiter-preferences.yaml`.
 - Skill: `.claude/skills/recruiter-scout/SKILL.md`
+- Message rules, cadence and offer-protection checklist: `.claude/skills/recruiter-scout/references/outreach-playbook.md`
+- Pipeline: `profile/recruiter-tracker.csv` (you update the status after sending)
 - Outputs: `recruiter-outreach/<date>/<firm>-<recruiter>/`
