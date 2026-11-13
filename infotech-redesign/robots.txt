@@ -1,0 +1,5 @@
+# Preview build: every page also carries <meta name="robots" content="noindex">. Remove those tags at go-live.
+User-agent: *
+Allow: /
+
+Sitemap: https://www.infotechconsultancy.io/sitemap.xml

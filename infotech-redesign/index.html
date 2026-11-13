@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Infotech home page: five design directions</title>
+<style>
+:root{--bg:#f4f3ef;--ink:#14161a;--muted:#5d626b;--line:#d8d5cc;--card:#fff}
+@media(prefers-color-scheme:dark){:root{--bg:#111316;--ink:#f1f1ee;--muted:#a3a7ae;--line:#2c3036;--card:#191c20}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:1rem/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{width:min(100% - 2.5rem,1180px);margin:0 auto;padding:clamp(2.5rem,6vw,5rem) 0}
+h1{font-size:clamp(1.9rem,4vw,3rem);line-height:1.1;letter-spacing:-.03em;margin:0 0 .5em;text-wrap:balance}
+header p{color:var(--muted);max-width:62ch;margin:0 0 2.5rem}
+ol{list-style:none;margin:0;padding:0;display:grid;gap:1.5rem;grid-template-columns:repeat(auto-fill,minmax(min(100%,340px),1fr))}
+li{position:relative;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;transition:translate .3s,box-shadow .3s}
+li:hover{translate:0 -4px;box-shadow:0 18px 40px rgba(0,0,0,.14)}
+img{display:block;width:100%;height:auto;border-bottom:1px solid var(--line)}
+div{padding:1.1rem 1.3rem 1.4rem}
+h2{font-size:1.2rem;margin:0 0 .3em;letter-spacing:-.01em}
+h2 span{color:var(--muted);font-weight:400;margin-right:.4em;font-variant-numeric:tabular-nums}
+a{color:inherit;text-decoration:none}
+a::after{content:"";position:absolute;inset:0}
+a:focus-visible{outline:none}
+li:focus-within{outline:2px solid var(--ink);outline-offset:3px}
+p{margin:0;color:var(--muted);font-size:.95rem}
+</style>
+</head>
+<body>
+<main>
+<header>
+<h1>Infotech home page: five design directions</h1>
+<p>Same copy, links and section order in every version. Scroll each one, hover the lists and cards, and resize the window. To go live, rename the chosen file to index.html.</p>
+</header>
+<ol>
+<li><img src="preview/design-1.webp" width="800" height="500" alt=""><div><h2><span>1</span><a href="design-1.html">Harbour</a></h2><p>The current brand, sharpened. Shutter-reveal photography, a client row that drifts with the scroll, service rows that fill on hover, tilting case cards.</p></div></li>
+<li><img src="preview/design-2.webp" width="800" height="500" alt="" loading="lazy"><div><h2><span>2</span><a href="design-2.html">Control Room</a></h2><p>Dark and technical. Case studies pin and travel sideways, text lights up word by word, cards carry a cursor-following glow, a section rail tracks your place.</p></div></li>
+<li><img src="preview/design-3.webp" width="800" height="500" alt="" loading="lazy"><div><h2><span>3</span><a href="design-3.html">Broadsheet</a></h2><p>Editorial. Serif headlines, ruled columns that draw themselves in, a typographic services index, case-study columns moving at different speeds.</p></div></li>
+<li><img src="preview/design-4.webp" width="800" height="500" alt="" loading="lazy"><div><h2><span>4</span><a href="design-4.html">Stack</a></h2><p>Bold and colourful. Every section is a card that pins, then shrinks under the next one. Magnetic buttons, pills that flood with colour.</p></div></li>
+<li><img src="preview/design-5.webp" width="800" height="500" alt="" loading="lazy"><div><h2><span>5</span><a href="design-5.html">Two Hubs</a></h2><p>One line runs the whole page, onshore to offshore, drawn as you scroll. The service list highlights whichever row is at mid-screen.</p></div></li>
+</ol>
+</main>
+</body>
+</html>
